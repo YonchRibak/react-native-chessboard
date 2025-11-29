@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import type { ChessInstance, PieceType } from 'chess.js';
+import type { Chess, PieceSymbol } from 'chess.js';
 import { PromotionDialog } from './dialog';
 
 export type BoardPromotionContextType = {
   showPromotionDialog: (_: {
     type: PromotionDialogType;
-    onSelect?: (_: PieceType) => void;
+    onSelect?: (_: PieceSymbol) => void;
   }) => void;
   isPromoting: boolean;
 };
@@ -15,12 +15,12 @@ const BoardPromotionContext = React.createContext<BoardPromotionContextType>({
   isPromoting: false,
 });
 
-type PromotionDialogType = ReturnType<ChessInstance['turn']>;
+type PromotionDialogType = ReturnType<Chess['turn']>;
 
 export type BoardPromotionContextState = {
   isDialogActive: boolean;
   type?: PromotionDialogType;
-  onSelect?: (_: PieceType) => void;
+  onSelect?: (_: PieceSymbol) => void;
 };
 
 const BoardPromotionContextProvider: React.FC = React.memo(({ children }) => {
@@ -34,7 +34,7 @@ const BoardPromotionContextProvider: React.FC = React.memo(({ children }) => {
     }, []);
 
   const onSelect = useCallback(
-    (piece: PieceType) => {
+    (piece: PieceSymbol) => {
       dialog.onSelect?.(piece);
       setDialog({ isDialogActive: false });
     },

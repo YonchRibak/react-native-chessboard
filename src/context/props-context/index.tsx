@@ -62,13 +62,20 @@ type ChessboardProps = {
    * Useful if you want to customise the default durations used in the chessboard (in milliseconds).
    */
   durations?: ChessboardDurationsType;
+  /**
+   * Skip validation when loading FEN positions. Useful for board editors where intermediate
+   * positions may be illegal (e.g., missing kings, invalid castling rights). When enabled,
+   * chess.js will not validate the position being loaded, allowing for illegal board states.
+   * Defaults to false for backward compatibility.
+   */
+  skipValidation?: boolean;
 };
 
 type ChessboardContextType = ChessboardProps &
   Required<
     Pick<
       ChessboardProps,
-      'gestureEnabled' | 'withLetters' | 'withNumbers' | 'boardSize'
+      'gestureEnabled' | 'withLetters' | 'withNumbers' | 'boardSize' | 'skipValidation'
     >
   > & { pieceSize: number } & {
     colors: Required<ChessboardColorsType>;
@@ -94,6 +101,7 @@ const defaultChessboardProps: ChessboardContextType = {
   withNumbers: true,
   boardSize: DEFAULT_BOARD_SIZE,
   pieceSize: DEFAULT_BOARD_SIZE / 8,
+  skipValidation: false,
 };
 
 const ChessboardPropsContext = React.createContext<ChessboardContextType>(

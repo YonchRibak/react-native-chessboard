@@ -14,6 +14,7 @@ import type { HighlightedSquareRefType } from '../../components/highlighted-squa
 
 import { useChessEngine } from '../chess-engine-context/hooks';
 import { useSetBoard } from '../board-context/hooks';
+import { useChessboardProps } from '../props-context/hooks';
 
 const PieceRefsContext = createContext<React.MutableRefObject<Record<
   Square,
@@ -44,6 +45,7 @@ const BoardRefsContextProviderComponent = React.forwardRef<
   const chess = useChessEngine();
   const board = chess.board();
   const setBoard = useSetBoard();
+  const { skipValidation } = useChessboardProps();
 
   // There must be a better way of doing this.
   const generateBoardRefs = useCallback(() => {
@@ -105,11 +107,11 @@ const BoardRefsContextProviderComponent = React.forwardRef<
       },
       resetBoard: (fen) => {
         chess.reset();
-        if (fen) chess.load(fen);
+        if (fen) chess.load(fen, { skipValidation });
         setBoard(chess.board());
       },
     }),
-    [board, chess, setBoard]
+    [board, chess, setBoard, skipValidation]
   );
 
   return (

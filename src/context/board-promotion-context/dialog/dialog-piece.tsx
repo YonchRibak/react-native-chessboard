@@ -1,4 +1,4 @@
-import type { PieceType } from 'chess.js';
+import type { PieceSymbol } from 'chess.js';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -16,8 +16,8 @@ type DialogPieceProps = {
   index: number;
   width: number;
   type: Player;
-  piece: PieceType;
-  onSelectPiece?: (piece: PieceType) => void;
+  piece: PieceSymbol;
+  onSelectPiece?: (piece: PieceSymbol) => void;
 };
 
 const DialogPiece: React.FC<DialogPieceProps> = React.memo(

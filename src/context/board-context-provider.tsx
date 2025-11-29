@@ -14,14 +14,15 @@ import { ChessEngineContext } from './chess-engine-context';
 
 type BoardContextProviderProps = {
   fen?: string;
+  skipValidation?: boolean;
   children?: React.ReactNode;
 };
 
 const ChessboardContextProviderComponent = React.forwardRef<
   ChessboardRef,
   BoardContextProviderProps
->(({ children, fen }, ref) => {
-  const chess = useConst(() => new Chess(fen));
+>(({ children, fen, skipValidation }, ref) => {
+  const chess = useConst(() => new Chess(fen, { skipValidation }));
   const chessboardRef = useRef<ChessboardRef>(null);
   const boardOperationsRef = useRef<BoardOperationsRef>(null);
 

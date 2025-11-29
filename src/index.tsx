@@ -57,7 +57,7 @@ const ChessboardContainerComponent = React.forwardRef<
   return (
     <GestureHandlerRootView>
       <ChessboardPropsContextProvider {...props}>
-        <ChessboardContextProvider ref={chessboardRef} fen={props.fen}>
+        <ChessboardContextProvider ref={chessboardRef} fen={props.fen} skipValidation={props.skipValidation}>
           <Chessboard />
         </ChessboardContextProvider>
       </ChessboardPropsContextProvider>

@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
 
-import type { ChessInstance, Square } from 'chess.js';
+import type { Chess, Square } from 'chess.js';
 
-type Player = ReturnType<ChessInstance['turn']>;
+type Player = ReturnType<Chess['turn']>;
 type Type = 'q' | 'r' | 'n' | 'b' | 'k' | 'p';
 type PieceType = `${Player}${Type}`;
 

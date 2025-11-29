@@ -1,4 +1,5 @@
-import type { PieceType, Square } from 'chess.js';
+import type { PieceSymbol, Square } from 'chess.js';
+import { PAWN, WHITE, BLACK } from 'chess.js';
 import React, {
   createContext,
   useCallback,
@@ -76,9 +77,9 @@ const BoardOperationsContextProviderComponent = React.forwardRef<
       const piece = chess.board()[y][x];
 
       return (
-        piece?.type === chess.PAWN &&
-        ((to.includes('8') && piece.color === chess.WHITE) ||
-          (to.includes('1') && piece.color === chess.BLACK))
+        piece?.type === PAWN &&
+        ((to.includes('8') && piece.color === WHITE) ||
+          (to.includes('1') && piece.color === BLACK))
       );
     },
     [chess, pieceSize, toTranslation]
@@ -107,7 +108,7 @@ const BoardOperationsContextProviderComponent = React.forwardRef<
   );
 
   const moveProgrammatically = useCallback(
-    (from: Square, to: Square, promotionPiece?: PieceType) => {
+    (from: Square, to: Square, promotionPiece?: PieceSymbol) => {
       const move = chess.move({
         from,
         to,
@@ -118,7 +119,7 @@ const BoardOperationsContextProviderComponent = React.forwardRef<
 
       if (move == null) return;
 
-      const isCheckmate = chess.in_checkmate();
+      const isCheckmate = chess.isCheckmate();
 
       if (isCheckmate) {
         const square = findKing(chess.turn() === 'b' ? 'bk' : 'wk');

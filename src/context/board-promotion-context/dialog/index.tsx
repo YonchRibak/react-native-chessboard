@@ -1,13 +1,13 @@
 import { useChessboardProps } from '../../../context/props-context/hooks';
 import React from 'react';
-import type { PieceType } from 'chess.js';
+import type { PieceSymbol } from 'chess.js';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 import { StyleSheet } from 'react-native';
 import type { BoardPromotionContextState } from '..';
 import { DialogPiece } from './dialog-piece';
 
-const PROMOTION_PIECES: PieceType[] = ['q', 'r', 'n', 'b'];
+const PROMOTION_PIECES: PieceSymbol[] = ['q', 'r', 'n', 'b'];
 
 const PromotionDialog: React.FC<Required<BoardPromotionContextState>> =
   React.memo(({ type, onSelect }) => {

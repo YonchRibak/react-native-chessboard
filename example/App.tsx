@@ -24,7 +24,7 @@ export default function App() {
       <Chessboard
         ref={ref}
         onMove={({ state }) => {
-          if (state.in_checkmate) {
+          if (state.isCheckmate) {
             console.log('Life goes on.');
           }
         }}
