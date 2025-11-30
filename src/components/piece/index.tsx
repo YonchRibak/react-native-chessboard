@@ -43,11 +43,18 @@ const Piece = React.memo(
       const {
         durations: { move: moveDuration },
         gestureEnabled: gestureEnabledFromChessboardProps,
+        skipValidation,
       } = useChessboardProps();
 
       const gestureEnabled = useDerivedValue(
-        () => turn.value === id.charAt(0) && gestureEnabledFromChessboardProps,
-        [id, gestureEnabledFromChessboardProps]
+        () => {
+          // When skipValidation is true, allow moving any piece regardless of turn
+          if (skipValidation) {
+            return gestureEnabledFromChessboardProps;
+          }
+          return turn.value === id.charAt(0) && gestureEnabledFromChessboardProps;
+        },
+        [id, gestureEnabledFromChessboardProps, skipValidation]
       );
 
       const { toPosition, toTranslation } = useReversePiecePosition();
@@ -62,11 +69,30 @@ const Piece = React.memo(
 
       const validateMove = useCallback(
         (from: Square, to: Square) => {
-          return chess
-            .moves({ verbose: true })
-            .find((m) => m.from === from && m.to === to);
+          if (skipValidation) {
+            // When skipValidation is true, create a mock move object to allow any move
+            return {
+              from,
+              to,
+              flags: '',
+              piece: 'p',
+              san: `${from}-${to}`,
+              lan: `${from}${to}`,
+              before: '',
+              after: '',
+            } as any;
+          }
+
+          try {
+            return chess
+              .moves({ verbose: true })
+              .find((m) => m.from === from && m.to === to);
+          } catch (error) {
+            // If chess.moves() fails, return undefined (invalid move)
+            return undefined;
+          }
         },
-        [chess]
+        [chess, skipValidation]
       );
 
       const wrappedOnMoveForJSThread = useCallback(

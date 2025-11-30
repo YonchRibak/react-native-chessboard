@@ -43,7 +43,13 @@ const BoardRefsContextProviderComponent = React.forwardRef<
   { children?: React.ReactNode }
 >(({ children }, ref) => {
   const chess = useChessEngine();
-  const board = chess.board();
+  let board: ReturnType<typeof chess.board>;
+  try {
+    board = chess.board();
+  } catch (error) {
+    // If board() fails, use an empty 8x8 array
+    board = Array(8).fill(null).map(() => Array(8).fill(null)) as any;
+  }
   const setBoard = useSetBoard();
   const { skipValidation } = useChessboardProps();
 
@@ -82,8 +88,13 @@ const BoardRefsContextProviderComponent = React.forwardRef<
         return pieceRefs?.current?.[from].current?.moveTo?.(to);
       },
       undo: () => {
-        chess.undo();
-        setBoard(chess.board());
+        try {
+          chess.undo();
+          setBoard(chess.board());
+        } catch (error) {
+          // If undo fails with skipValidation, silently fail
+          if (!skipValidation) throw error;
+        }
       },
       highlight: ({ square, color }) => {
         squareRefs.current?.[square].current.highlight({
@@ -91,24 +102,52 @@ const BoardRefsContextProviderComponent = React.forwardRef<
         });
       },
       resetAllHighlightedSquares: () => {
-        for (let x = 0; x < board.length; x++) {
-          const row = board[x];
-          for (let y = 0; y < row.length; y++) {
-            const col = String.fromCharCode(97 + Math.round(x));
-            // eslint-disable-next-line no-shadow
-            const row = `${8 - Math.round(y)}`;
-            const square = `${col}${row}` as Square;
-            squareRefs.current?.[square].current.reset();
+        try {
+          for (let x = 0; x < board.length; x++) {
+            const row = board[x];
+            if (!row) continue;
+            for (let y = 0; y < row.length; y++) {
+              const col = String.fromCharCode(97 + Math.round(x));
+              // eslint-disable-next-line no-shadow
+              const row = `${8 - Math.round(y)}`;
+              const square = `${col}${row}` as Square;
+              squareRefs.current?.[square].current.reset();
+            }
           }
+        } catch (error) {
+          // If reset fails, silently fail
+          if (!skipValidation) throw error;
         }
       },
       getState: () => {
-        return getChessboardState(chess);
+        try {
+          return getChessboardState(chess);
+        } catch (error) {
+          // If getChessboardState fails with skipValidation, return default values
+          if (skipValidation) {
+            return {
+              isCheck: false,
+              isCheckmate: false,
+              isDraw: false,
+              isStalemate: false,
+              isThreefoldRepetition: false,
+              isInsufficientMaterial: false,
+              isGameOver: false,
+              fen: '',
+            };
+          }
+          throw error;
+        }
       },
       resetBoard: (fen) => {
-        chess.reset();
-        if (fen) chess.load(fen, { skipValidation });
-        setBoard(chess.board());
+        try {
+          chess.reset();
+          if (fen) chess.load(fen, { skipValidation });
+          setBoard(chess.board());
+        } catch (error) {
+          // If reset/load fails with skipValidation, silently fail
+          if (!skipValidation) throw error;
+        }
       },
     }),
     [board, chess, setBoard, skipValidation]
